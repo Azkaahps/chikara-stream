@@ -53,6 +53,8 @@ export default function AnimeWatch() {
   const navigate = useNavigate();
 
   const detail = useAsync(() => animeApi.detail(id, slug), [id, slug]);
+  // Full episode list for prev/next navigation (server-side paginated + cached).
+  const fullEps = useAsync(() => animeApi.episodes(id, slug), [id, slug]);
   const stream = useAsync(
     async () => {
       try {
@@ -137,16 +139,17 @@ export default function AnimeWatch() {
 
   // ---------- episode navigation ----------
   const episodes = useMemo(() => {
-    const fromApi = (detail.data?.episodes || [])
-      .map((e) => e.episode)
-      .filter((n) => Number.isFinite(n) && n > 0);
-    if (fromApi.length) return [...new Set(fromApi)].sort((a, b) => a - b);
+    const nums = [
+      ...(detail.data?.episodes || []).map((e) => e.episode),
+      ...(fullEps.data?.episodes || []).map((e) => e.episode),
+    ].filter((n) => Number.isFinite(n) && n > 0);
+    if (nums.length) return [...new Set(nums)].sort((a, b) => a - b);
     const total = Number.parseInt(detail.data?.episodesTotal || '', 10);
     if (Number.isFinite(total) && total > 0) {
       return Array.from({ length: total }, (_, i) => i + 1);
     }
     return [episode];
-  }, [detail.data, episode]);
+  }, [detail.data, fullEps.data, episode]);
 
   const idx = episodes.indexOf(episode);
   const prevEp = idx > 0 ? episodes[idx - 1] : null;

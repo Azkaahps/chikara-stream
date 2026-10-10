@@ -3,6 +3,7 @@
 import { useMemo, useState } from 'react';
 import { AlertTriangle, History, RotateCcw, Search as SearchIcon, SearchX, X } from 'lucide-react';
 import { animeApi, animeToTitle, movieApi, movieToTitle } from '../lib/api';
+import { mirror } from '../lib/persist';
 import type { Title } from '../lib/types';
 import { useAsync, useDebounced } from '../lib/hooks';
 import TopBar from '../components/TopBar';
@@ -32,11 +33,13 @@ function readRecent(): string[] {
 }
 
 function writeRecent(list: string[]) {
+  const raw = JSON.stringify(list);
   try {
-    localStorage.setItem(RECENT_KEY, JSON.stringify(list));
+    localStorage.setItem(RECENT_KEY, raw);
   } catch {
     /* storage unavailable */
   }
+  mirror(RECENT_KEY, raw);
 }
 
 export default function Search() {

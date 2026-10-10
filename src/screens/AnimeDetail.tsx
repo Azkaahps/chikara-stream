@@ -1,9 +1,9 @@
 // AnimeDetail - hero poster, meta chips, sinopsis, daftar episode.
 // Route: /anime/:id/:slug - tapping an episode opens /watch/anime/:id/:slug/:ep
 
-import { useEffect, useMemo, useState } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 import { Link, useParams } from 'react-router-dom';
-import { Bookmark, BookmarkCheck, ChevronRight, Play, Star } from 'lucide-react';
+import { Bookmark, BookmarkCheck, ChevronRight, Play, Search, Star, X } from 'lucide-react';
 import { animeApi, ApiError, resolvePoster } from '../lib/api';
 import { useAsync } from '../lib/hooks';
 import { getProgress, isInWatchlist, toggleWatchlist } from '../lib/store';
@@ -21,28 +21,72 @@ export default function AnimeDetail() {
     [id, slug],
   );
 
+  // Full episode list: the server walks the upstream pagination and caches it.
+  // Runs in parallel with the detail fetch; the detail batch renders meanwhile.
+  const fullState = useAsync(() => {
+    if (!id || !slug) throw new ApiError('Data anime tidak lengkap');
+    return animeApi.episodes(id, slug);
+  }, [id, slug]);
+
   const detail = state.data;
   const progressKey = id && slug ? `anime:${id}:${slug}` : '';
 
   const [saved, setSaved] = useState(false);
   const [expanded, setExpanded] = useState(false);
   const [newestFirst, setNewestFirst] = useState(false);
+  const [epQuery, setEpQuery] = useState('');
 
   // keep watchlist state in sync when the route params change
   useEffect(() => {
     setSaved(progressKey ? isInWatchlist(progressKey) : false);
   }, [progressKey]);
 
+  // reset the episode search when navigating to another title
+  useEffect(() => {
+    setEpQuery('');
+  }, [id, slug]);
+
   const progress = useMemo(
     () => (progressKey ? getProgress(progressKey) : undefined),
     [progressKey],
   );
 
+  // Merge the detail batch with the full list (full entries win - they carry
+  // real hrefs); dedupe by episode number so nothing shows twice.
   const episodes = useMemo(() => {
-    const list = [...(detail?.episodes ?? [])];
+    const map = new Map<number, { episode: number; title?: string; href?: string; streamEndpoint?: string }>();
+    for (const e of detail?.episodes ?? []) {
+      if (Number.isFinite(e.episode)) map.set(e.episode, e);
+    }
+    for (const e of fullState.data?.episodes ?? []) {
+      if (Number.isFinite(e.episode)) map.set(e.episode, e);
+    }
+    const list = [...map.values()];
     list.sort((a, b) => (newestFirst ? b.episode - a.episode : a.episode - b.episode));
     return list;
-  }, [detail, newestFirst]);
+  }, [detail, fullState.data, newestFirst]);
+
+  const visibleEpisodes = useMemo(() => {
+    const q = epQuery.trim();
+    if (!q) return episodes;
+    return episodes.filter((e) => String(e.episode).includes(q));
+  }, [episodes, epQuery]);
+
+  // Bring the "continue here" row into view once the list settles.
+  const epListRef = useRef<HTMLDivElement>(null);
+  const currentEpRef = useRef<HTMLAnchorElement>(null);
+  const autoScrolledKey = useRef('');
+  useEffect(() => {
+    const current = progress?.episode;
+    if (!current) return;
+    const key = `${id}:${episodes.length}:${current}`;
+    if (autoScrolledKey.current === key) return;
+    const box = epListRef.current;
+    const el = currentEpRef.current;
+    if (!box || !el) return;
+    autoScrolledKey.current = key;
+    box.scrollTop = Math.max(0, el.offsetTop - box.clientHeight / 2 + el.clientHeight / 2);
+  }, [id, episodes.length, progress?.episode]);
 
   const firstEpisode = episodes.length ? Math.min(...episodes.map((e) => e.episode)) : 1;
   const startEp = progress?.episode ?? firstEpisode;
@@ -115,14 +159,17 @@ export default function AnimeDetail() {
   const totalRaw = detail.episodesTotal?.trim();
   const totalNum = totalRaw && /^\d+$/.test(totalRaw) ? Number(totalRaw) : undefined;
   const epCount = episodes.length;
-  const countLabel = totalNum
-    ? `${totalNum} Episode`
-    : epCount
-      ? `${epCount} Episode terbaru`
-      : 'Episode';
+  const fullLoaded = Boolean(fullState.data?.episodes?.length);
+  const countLabel = fullLoaded
+    ? `${epCount} Episode`
+    : totalNum
+      ? `${totalNum} Episode`
+      : epCount
+        ? `${epCount} Episode terbaru`
+        : 'Episode';
 
   const chips = [
-    totalNum ? `${totalNum} eps` : epCount ? `${epCount} eps terbaru` : '',
+    fullLoaded ? `${epCount} eps` : totalNum ? `${totalNum} eps` : epCount ? `${epCount} eps terbaru` : '',
     detail.duration || '',
     detail.season || '',
     detail.quality || '',
@@ -296,44 +343,90 @@ export default function AnimeDetail() {
             )}
           </div>
 
+          {/* full list still loading from the server */}
+          {!fullLoaded && !fullState.error && episodes.length > 0 && (
+            <p className="mt-2 flex items-center gap-2 text-[11.5px] text-fg-3">
+              <span className="inline-block h-3 w-3 animate-spin rounded-full border-2 border-line-2 border-t-accent" />
+              Memuat daftar episode lengkap...
+            </p>
+          )}
+
+          {/* episode search */}
+          {episodes.length > 6 && (
+            <div className="mt-3 flex items-center gap-2 rounded-[14px] bg-card px-3.5 py-2.5 ring-1 ring-line">
+              <Search size={15} className="shrink-0 text-fg-3" />
+              <input
+                value={epQuery}
+                onChange={(e) => setEpQuery(e.target.value)}
+                inputMode="numeric"
+                placeholder="Cari episode (nomor)..."
+                aria-label="Cari episode"
+                className="min-w-0 flex-1 bg-transparent text-[13.5px] text-fg outline-none placeholder:text-fg-3"
+              />
+              {epQuery.length > 0 && (
+                <button
+                  type="button"
+                  onClick={() => setEpQuery('')}
+                  aria-label="Hapus pencarian episode"
+                  className="pressable grid h-6 w-6 shrink-0 place-items-center rounded-full bg-card-2 text-fg-3"
+                >
+                  <X size={13} />
+                </button>
+              )}
+            </div>
+          )}
+
           {episodes.length === 0 ? (
             <div className="mt-3 rounded-[14px] bg-card p-4 text-center text-[12.5px] text-fg-3 ring-1 ring-line">
               Belum ada episode untuk judul ini.
             </div>
           ) : (
-            <div className="mt-3 space-y-2">
-              {episodes.map((ep) => {
-                const isCurrent = progress?.episode === ep.episode;
-                return (
-                  <Link
-                    key={`${ep.episode}-${ep.title ?? ''}`}
-                    to={`/watch/anime/${detail.id}/${detail.slug}/${ep.episode}`}
-                    className={`pressable flex items-center gap-3 rounded-[14px] bg-card px-3 py-2.5 ring-1 ${
-                      isCurrent ? 'ring-accent/60' : 'ring-line'
-                    }`}
-                  >
-                    <span
-                      className={`grid h-9 w-9 shrink-0 place-items-center rounded-[10px] text-[12.5px] font-bold ${
-                        isCurrent ? 'bg-accent text-black' : 'bg-card-2 text-fg-2 ring-1 ring-line'
+            <>
+              {epQuery.trim() && (
+                <p className="mt-2 text-[11.5px] text-fg-3">
+                  {visibleEpisodes.length
+                    ? `${visibleEpisodes.length} episode cocok`
+                    : 'Tidak ada episode dengan nomor itu.'}
+                </p>
+              )}
+              <div
+                ref={epListRef}
+                className="no-scrollbar mt-3 max-h-[430px] space-y-2 overflow-y-auto overscroll-contain rounded-[16px] bg-card/40 p-2 ring-1 ring-line"
+              >
+                {visibleEpisodes.map((ep) => {
+                  const isCurrent = progress?.episode === ep.episode;
+                  return (
+                    <Link
+                      key={ep.episode}
+                      ref={isCurrent ? currentEpRef : undefined}
+                      to={`/watch/anime/${detail.id}/${detail.slug}/${ep.episode}`}
+                      className={`pressable flex items-center gap-3 rounded-[14px] bg-card px-3 py-2.5 ring-1 ${
+                        isCurrent ? 'ring-accent/60' : 'ring-line'
                       }`}
                     >
-                      {ep.episode}
-                    </span>
-                    <div className="min-w-0 flex-1">
-                      <p className="truncate text-[13px] font-semibold text-fg">
-                        {ep.title?.trim() || `Episode ${ep.episode}`}
-                      </p>
-                      {isCurrent && (
-                        <p className="mt-0.5 text-[11px] font-semibold text-accent">
-                          Lanjutkan di sini
+                      <span
+                        className={`grid h-9 w-9 shrink-0 place-items-center rounded-[10px] text-[12.5px] font-bold ${
+                          isCurrent ? 'bg-accent text-black' : 'bg-card-2 text-fg-2 ring-1 ring-line'
+                        }`}
+                      >
+                        {ep.episode}
+                      </span>
+                      <div className="min-w-0 flex-1">
+                        <p className="truncate text-[13px] font-semibold text-fg">
+                          {ep.title?.trim() || `Episode ${ep.episode}`}
                         </p>
-                      )}
-                    </div>
-                    <ChevronRight size={16} className="shrink-0 text-fg-3" />
-                  </Link>
-                );
-              })}
-            </div>
+                        {isCurrent && (
+                          <p className="mt-0.5 text-[11px] font-semibold text-accent">
+                            Lanjutkan di sini
+                          </p>
+                        )}
+                      </div>
+                      <ChevronRight size={16} className="shrink-0 text-fg-3" />
+                    </Link>
+                  );
+                })}
+              </div>
+            </>
           )}
         </section>
       </div>

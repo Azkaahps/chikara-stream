@@ -1,5 +1,8 @@
-// Local storage: watchlist + watch progress (localStorage, no account needed)
+// Local storage: watchlist + watch progress (localStorage, no account needed).
+// Every write is also mirrored to native storage (see lib/persist.ts) so the
+// data survives app updates that wipe the WebView's localStorage.
 
+import { mirror } from './persist';
 import type { WatchlistEntry, WatchProgress } from './types';
 
 const WATCHLIST_KEY = 'chikara:watchlist:v1';
@@ -16,11 +19,13 @@ function read<T>(key: string, fallback: T): T {
 }
 
 function write(key: string, value: unknown) {
+  const raw = JSON.stringify(value);
   try {
-    localStorage.setItem(key, JSON.stringify(value));
+    localStorage.setItem(key, raw);
   } catch {
     /* storage full / unavailable */
   }
+  mirror(key, raw);
 }
 
 // ---------- Watchlist ----------

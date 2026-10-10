@@ -141,6 +141,15 @@ export function movieToTitle(m: MovieListItemRaw, kind: MediaKind = 'movie'): Ti
 
 // ---------- Anime ----------
 
+export interface AnimeEpisodesData {
+  id: string;
+  slug: string;
+  total: number;
+  pagesFetched?: number;
+  complete?: boolean;
+  episodes: { episode: number; title?: string; href?: string; streamEndpoint?: string }[];
+}
+
 export const animeApi = {
   home: () => request<AnimeListItemRaw[]>('/anime/home'),
   ongoing: () => request<AnimeListItemRaw[]>('/anime/ongoing'),
@@ -158,6 +167,9 @@ export const animeApi = {
   search: (q: string, page = 1) =>
     request<AnimeListItemRaw[]>(`/anime/search?q=${encodeURIComponent(q)}&page=${page}`),
   detail: (id: string, slug: string) => request<AnimeDetailRaw>(`/anime/detail/${id}/${slug}`),
+  /** Full episode list (walks upstream pagination server-side; cached 24h). */
+  episodes: (id: string, slug: string) =>
+    request<AnimeEpisodesData>(`/anime/episodes/${id}/${slug}`),
   stream: (id: string, slug: string, ep: number | string) =>
     request<AnimeStreamData>(`/anime/stream/${id}/${slug}/${ep}`),
 };
