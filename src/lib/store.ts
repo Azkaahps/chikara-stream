@@ -2,8 +2,8 @@
 
 import type { WatchlistEntry, WatchProgress } from './types';
 
-const WATCHLIST_KEY = 'azkahps:watchlist:v1';
-const PROGRESS_KEY = 'azkahps:progress:v1';
+const WATCHLIST_KEY = 'chikara:watchlist:v1';
+const PROGRESS_KEY = 'chikara:progress:v1';
 const MAX_PROGRESS = 60;
 
 function read<T>(key: string, fallback: T): T {

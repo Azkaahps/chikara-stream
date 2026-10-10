@@ -2,7 +2,7 @@ import type { CapacitorConfig } from '@capacitor/cli';
 
 const config: CapacitorConfig = {
   appId: 'online.azkahps.play',
-  appName: 'AZKAHPS Play',
+  appName: 'Chikara Stream',
   webDir: 'dist',
   server: {
     androidScheme: 'https',

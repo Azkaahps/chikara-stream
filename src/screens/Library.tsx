@@ -127,7 +127,7 @@ export default function Library() {
                   <button
                     onClick={() => removeFromProgress(p.key)}
                     aria-label={`Hapus ${p.title} dari lanjut nonton`}
-                    className="pressable absolute right-1.5 top-1.5 z-10 grid h-7 w-7 place-items-center rounded-full bg-black/80 text-fg-2 ring-1 ring-line-2 backdrop-blur-sm"
+                    className="pressable absolute right-1.5 top-1.5 z-10 grid h-7 w-7 place-items-center rounded-full bg-black/80 text-fg-2 ring-1 ring-line-2"
                   >
                     <Trash2 size={13} />
                   </button>
@@ -165,7 +165,7 @@ export default function Library() {
                 <button
                   onClick={() => removeFromWatchlist(e)}
                   aria-label={`Hapus ${e.title} dari daftar simpan`}
-                  className="pressable absolute -right-1.5 -top-1.5 z-10 grid h-7 w-7 place-items-center rounded-full bg-black/85 text-fg-2 ring-1 ring-line-2 backdrop-blur-sm"
+                  className="pressable absolute -right-1.5 -top-1.5 z-10 grid h-7 w-7 place-items-center rounded-full bg-black/85 text-fg-2 ring-1 ring-line-2"
                 >
                   <Trash2 size={13} />
                 </button>

@@ -14,7 +14,7 @@ const TABS = [
 export default function TabBar() {
   return (
     <nav className="pointer-events-none fixed inset-x-0 bottom-0 z-40 flex justify-center pb-[max(env(safe-area-inset-bottom),12px)]">
-      <div className="pointer-events-auto mx-4 flex w-full max-w-[480px] items-center justify-around rounded-[26px] bg-[#0a0a0b]/95 px-2 py-2 ring-1 ring-line backdrop-blur-xl">
+      <div className="pointer-events-auto mx-4 flex w-full max-w-[480px] items-center justify-around rounded-[26px] bg-[#0a0a0b] px-2 py-2 ring-1 ring-line">
         {TABS.map(({ to, label, icon: Icon }) => (
           <NavLink
             key={to}

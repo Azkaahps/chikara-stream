@@ -27,6 +27,7 @@ export default function TitleCard({ item, variant = 'grid', to }: Props) {
             src={item.poster}
             alt={item.title}
             loading="lazy"
+            decoding="async"
             className="h-full w-full object-cover"
           />
         ) : (
@@ -52,7 +53,7 @@ export default function TitleCard({ item, variant = 'grid', to }: Props) {
 
         {/* rating badge */}
         {item.rating != null && item.rating > 0 && (
-          <div className="absolute right-1.5 top-1.5 flex items-center gap-0.5 rounded-md bg-black/75 px-1.5 py-0.5 backdrop-blur-sm">
+          <div className="absolute right-1.5 top-1.5 flex items-center gap-0.5 rounded-md bg-black/75 px-1.5 py-0.5">
             <Star size={10} className="fill-accent text-accent" />
             <span className="text-[10.5px] font-semibold text-white">
               {item.rating.toFixed(1)}

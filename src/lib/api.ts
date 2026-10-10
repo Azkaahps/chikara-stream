@@ -1,6 +1,8 @@
 // ============================================================
-// AZKAHPS Play — API client
+// Chikara Stream — API client
 // Wraps https://api.azkahps.online/api/v1
+// Small cache layer (memory + persisted home feeds) so the app
+// opens instantly and survives flaky networks on slow devices.
 // ============================================================
 import type {
   ApiEnvelope,
@@ -30,8 +32,49 @@ export class ApiError extends Error {
 }
 
 const TIMEOUT_MS = 20_000;
+const MEM_TTL_MS = 5 * 60_000;
+const PERSIST_TTL_MS = 60 * 60_000;
+const PERSIST_PREFIX = 'chikara:cache:';
+const PERSIST_PATHS = new Set(['/anime/home', '/movie/home', '/anime/movies']);
 
-async function request<T>(path: string, init?: RequestInit): Promise<T> {
+const memCache = new Map<string, { t: number; data: unknown }>();
+
+interface PersistEntry<T> {
+  t: number;
+  data: T;
+}
+
+function readPersist<T>(path: string): PersistEntry<T> | null {
+  try {
+    const raw = localStorage.getItem(PERSIST_PREFIX + path);
+    return raw ? (JSON.parse(raw) as PersistEntry<T>) : null;
+  } catch {
+    return null;
+  }
+}
+
+function writePersist(path: string, data: unknown) {
+  try {
+    localStorage.setItem(PERSIST_PREFIX + path, JSON.stringify({ t: Date.now(), data }));
+  } catch {
+    /* storage full / unavailable */
+  }
+}
+
+/** Stream URLs must never be cached (they expire). */
+function isCacheable(path: string): boolean {
+  return !path.includes('/stream');
+}
+
+async function request<T>(path: string, init?: RequestInit, opts?: { net?: boolean }): Promise<T> {
+  const cacheable = isCacheable(path);
+  const persistable = PERSIST_PATHS.has(path);
+
+  if (cacheable && !opts?.net) {
+    const hit = memCache.get(path);
+    if (hit && Date.now() - hit.t < MEM_TTL_MS) return hit.data as T;
+  }
+
   const controller = new AbortController();
   const timer = setTimeout(() => controller.abort(), TIMEOUT_MS);
   try {
@@ -44,8 +87,17 @@ async function request<T>(path: string, init?: RequestInit): Promise<T> {
     if (!json.ok) {
       throw new ApiError(json.message || json.error || `API error`, res.status, path);
     }
+    if (cacheable) {
+      memCache.set(path, { t: Date.now(), data: json.data });
+      if (persistable) writePersist(path, json.data);
+    }
     return json.data;
   } catch (err) {
+    // Network/upstream failure on a persisted feed → serve the last good copy.
+    if (cacheable && persistable) {
+      const fallback = readPersist<T>(path);
+      if (fallback && Date.now() - fallback.t < PERSIST_TTL_MS) return fallback.data;
+    }
     if (err instanceof ApiError) throw err;
     if ((err as Error).name === 'AbortError') {
       throw new ApiError('Koneksi timeout — cek internet kamu', undefined, path);
@@ -145,6 +197,16 @@ export interface MovieStreamData {
     url?: string;
   }[];
 }
+
+// ---------- Splash prefetch ----------
+// Always hits the network (fresh), writes cache for instant Home paint,
+// and falls back to the persisted copy when offline.
+
+export const prefetch = {
+  home: () => request<AnimeListItemRaw[]>('/anime/home', undefined, { net: true }),
+  movieHome: () => request<MovieHomeData>('/movie/home', undefined, { net: true }),
+  animeMovies: () => request<AnimeListItemRaw[]>('/anime/movies', undefined, { net: true }),
+};
 
 // ---------- Proxy helpers ----------
 

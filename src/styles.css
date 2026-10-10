@@ -1,7 +1,11 @@
 /* ============================================================
-   AZKAHPS Play — Design tokens
+   Chikara Stream — Design tokens
    Adapted from AniBiPlay design study (design-lab/06-anibiplay-mobile)
    Dark-first, single warm accent, poster-forward, big radii.
+
+   Perf notes (potato-phone friendly):
+   - animations use transform/opacity only (no animated filters/shadows)
+   - backdrop-filter avoided on purpose; surfaces use solid colors
    ============================================================ */
 
 @import 'tailwindcss';
@@ -73,35 +77,36 @@ body {
   color: var(--color-accent);
 }
 
-/* Shimmer placeholder */
+/* Shimmer placeholder — cheap opacity pulse (no background-position repaint) */
 @keyframes shimmer {
-  0% {
-    background-position: -400px 0;
-  }
+  0%,
   100% {
-    background-position: 400px 0;
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.5;
   }
 }
 .shimmer {
-  background: linear-gradient(90deg, #151515 25%, #1f1f20 50%, #151515 75%);
-  background-size: 800px 100%;
-  animation: shimmer 1.4s infinite linear;
+  background: #151515;
+  animation: shimmer 1.2s ease-in-out infinite;
 }
 
-/* Splash pulse */
+/* Splash pulse — transform/opacity only (GPU-cheap) */
 @keyframes glow-pulse {
   0%,
   100% {
-    filter: drop-shadow(0 0 18px rgba(255, 201, 40, 0.45));
     transform: scale(1);
+    opacity: 0.92;
   }
   50% {
-    filter: drop-shadow(0 0 34px rgba(255, 201, 40, 0.75));
-    transform: scale(1.04);
+    transform: scale(1.045);
+    opacity: 1;
   }
 }
 .glow-pulse {
-  animation: glow-pulse 2.2s ease-in-out infinite;
+  animation: glow-pulse 2.4s ease-in-out infinite;
+  will-change: transform, opacity;
 }
 
 /* Bottom sheet slide up */
@@ -128,6 +133,27 @@ body {
 }
 .fade-in {
   animation: fade-in 200ms ease-out;
+}
+
+/* Fullscreen video stage (JS requestFullscreen path) */
+.video-stage:fullscreen,
+.video-stage:-webkit-full-screen {
+  width: 100vw !important;
+  height: 100vh !important;
+  aspect-ratio: auto !important;
+  background: #000;
+}
+.video-stage:fullscreen video,
+.video-stage:-webkit-full-screen video {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+}
+
+/* Skip rendering for far offscreen sections (potato perf) */
+.cv-auto {
+  content-visibility: auto;
+  contain-intrinsic-size: auto 300px;
 }
 
 /* Line clamp helpers */

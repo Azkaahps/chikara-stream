@@ -1,7 +1,7 @@
 <?xml version='1.0' encoding='utf-8'?>
 <resources>
-    <string name="app_name">AZKAHPS Play</string>
-    <string name="title_activity_main">AZKAHPS Play</string>
+    <string name="app_name">Chikara Stream</string>
+    <string name="title_activity_main">Chikara Stream</string>
     <string name="package_name">online.azkahps.play</string>
     <string name="custom_url_scheme">online.azkahps.play</string>
 </resources>

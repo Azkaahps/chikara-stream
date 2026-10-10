@@ -17,7 +17,7 @@ const FILTERS: { key: Filter; label: string }[] = [
   { key: 'movie', label: 'Film' },
 ];
 
-const RECENT_KEY = 'azkahps:searches:v1';
+const RECENT_KEY = 'chikara:searches:v1';
 const MAX_RECENT = 8;
 const MIN_QUERY = 2;
 

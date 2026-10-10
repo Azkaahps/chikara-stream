@@ -7,10 +7,28 @@
 // ============================================================
 
 import { useEffect, useRef, useState, useCallback } from 'react';
-import Hls from 'hls.js';
+import type HlsType from 'hls.js';
 import { animeApi, movieApi, proxy } from '../lib/api';
 import type { MovieStreamData } from '../lib/api';
 import type { AnimeStreamData } from '../lib/types';
+
+// hls.js is heavy (~500 KB) and only needed for movie HLS servers, so it is
+// lazy-loaded on demand. `hls.js/light` drops the subtitle/alt-audio parsers
+// we do not use — cheaper to download, parse and keep in memory on slow phones.
+type HlsCtor = typeof import('hls.js').default;
+let hlsCtorPromise: Promise<HlsCtor> | null = null;
+
+function loadHls(): Promise<HlsCtor> {
+  if (!hlsCtorPromise) {
+    hlsCtorPromise = import('hls.js/light')
+      .then((mod) => mod.default as HlsCtor)
+      .catch((err) => {
+        hlsCtorPromise = null; // allow retry on a flaky network
+        throw err;
+      });
+  }
+  return hlsCtorPromise;
+}
 
 export interface PlaySource {
   /** proxied URL ready for <video> */
@@ -129,7 +147,7 @@ export function useVideoPlayback(
   } = {},
 ): PlaybackHandle {
   const videoRef = useRef<HTMLVideoElement | null>(null);
-  const hlsRef = useRef<Hls | null>(null);
+  const hlsRef = useRef<HlsType | null>(null);
   const [ready, setReady] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [qualityIdx, setQualityIdx] = useState(0);
@@ -193,35 +211,46 @@ export function useVideoPlayback(
     video.addEventListener('error', onErr);
 
     if (active.type === 'hls') {
-      if (Hls.isSupported()) {
-        const hls = new Hls({
-          enableWorker: true,
-          abrEwmaDefaultEstimate: 2_500_000,
-          capLevelToPlayerSize: false,
-        });
-        hlsRef.current = hls;
-        hls.loadSource(active.url);
-        hls.attachMedia(video);
-        hls.on(Hls.Events.ERROR, (_evt, data) => {
-          if (data.fatal) {
-            switch (data.type) {
-              case Hls.ErrorTypes.NETWORK_ERROR:
-                hls.startLoad();
-                break;
-              case Hls.ErrorTypes.MEDIA_ERROR:
-                hls.recoverMediaError();
-                break;
-              default:
-                setError('Stream bermasalah — coba server lain');
-                break;
-            }
+      loadHls()
+        .then((Hls) => {
+          if (destroyed) return;
+          if (Hls.isSupported()) {
+            const hls = new Hls({
+              enableWorker: true,
+              abrEwmaDefaultEstimate: 2_500_000,
+              capLevelToPlayerSize: false,
+              // bounded buffers — keep memory low on potato phones
+              backBufferLength: 30,
+              maxBufferLength: 20,
+              maxMaxBufferLength: 40,
+            });
+            hlsRef.current = hls;
+            hls.loadSource(active.url);
+            hls.attachMedia(video);
+            hls.on(Hls.Events.ERROR, (_evt, data) => {
+              if (data.fatal) {
+                switch (data.type) {
+                  case Hls.ErrorTypes.NETWORK_ERROR:
+                    hls.startLoad();
+                    break;
+                  case Hls.ErrorTypes.MEDIA_ERROR:
+                    hls.recoverMediaError();
+                    break;
+                  default:
+                    setError('Stream bermasalah — coba server lain');
+                    break;
+                }
+              }
+            });
+          } else if (video.canPlayType('application/vnd.apple.mpegurl')) {
+            video.src = active.url;
+          } else {
+            setError('Perangkat tidak mendukung HLS');
           }
+        })
+        .catch(() => {
+          if (!destroyed) setError('Gagal memuat pemutar — coba lagi');
         });
-      } else if (video.canPlayType('application/vnd.apple.mpegurl')) {
-        video.src = active.url;
-      } else {
-        setError('Perangkat tidak mendukung HLS');
-      }
     } else {
       video.src = active.url;
     }

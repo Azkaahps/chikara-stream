@@ -13,7 +13,7 @@ interface Props {
 /** Horizontal scrolling rail section (AniBiPlay rail pattern). */
 export default function Rail({ eyebrow, title, more, children }: Props) {
   return (
-    <section className="mt-6">
+    <section className="cv-auto mt-6">
       <div className="flex items-end justify-between px-4">
         <div>
           {eyebrow && <p className="eyebrow">{eyebrow}</p>}

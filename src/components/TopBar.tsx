@@ -21,7 +21,7 @@ export default function TopBar({ eyebrow, title, back, right, floating }: Props)
         {back ? (
           <button
             onClick={() => (history.length > 1 ? navigate(-1) : navigate('/'))}
-            className="pressable pointer-events-auto grid h-10 w-10 place-items-center rounded-full bg-black/60 ring-1 ring-white/15 backdrop-blur-md"
+            className="pressable pointer-events-auto grid h-10 w-10 place-items-center rounded-full bg-black/80 ring-1 ring-white/15"
             aria-label="Kembali"
           >
             <ArrowLeft size={20} />

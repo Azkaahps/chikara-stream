@@ -10,6 +10,7 @@ import Rail from '../components/Rail';
 import TitleCard from '../components/TitleCard';
 import { SkeletonHero, SkeletonRail } from '../components/Skeleton';
 import { getAllProgress } from '../lib/store';
+import { LogoBox } from '../components/Logo';
 
 export default function Home() {
   const animeHome = useAsync(() => animeApi.home(), []);
@@ -41,17 +42,13 @@ export default function Home() {
         <div>
           <p className="eyebrow">Tontonan malam ini</p>
           <h1 className="mt-0.5 text-[28px] font-black uppercase tracking-tight text-accent">
-            Azkahps Play
+            Chikara Stream
           </h1>
           <p className="mt-0.5 text-[12.5px] text-fg-3">
             Anime & film streaming — satu tempat.
           </p>
         </div>
-        <div className="grid h-11 w-11 place-items-center rounded-2xl bg-accent">
-          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" aria-hidden>
-            <path d="M12 3 3 21h5l4-9 4 9h5L12 3z" fill="#000" />
-          </svg>
-        </div>
+        <LogoBox size={44} />
       </header>
 
       {/* Continue watching */}
@@ -227,7 +224,7 @@ export default function Home() {
       )}
 
       <footer className="mt-10 px-4 pb-6 text-center text-[11px] text-fg-3">
-        AZKAHPS Play · data dari api.azkahps.online
+        Chikara Stream · data dari api.azkahps.online
       </footer>
     </div>
   );

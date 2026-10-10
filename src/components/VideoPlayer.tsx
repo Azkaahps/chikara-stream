@@ -1,9 +1,11 @@
 // VideoPlayer — core playback surface.
-// Native <video> controls (reliable on Android WebView) + quality chips + retry.
+// Native <video> controls (reliable on Android WebView) + quality chips +
+// fullscreen toggle that forces landscape on phones.
 
 import { useEffect, useRef, useState } from 'react';
-import { RotateCcw, AlertTriangle, Loader2 } from 'lucide-react';
+import { RotateCcw, AlertTriangle, Loader2, Maximize2, Minimize2 } from 'lucide-react';
 import type { PlaybackHandle, PlaybackInfo } from '../lib/player';
+import { lockLandscape, unlockOrientation } from '../lib/native';
 
 interface Props {
   info: PlaybackInfo | null;
@@ -18,7 +20,8 @@ interface Props {
 export default function VideoPlayer({ info, handle, title, poster, header, autoPlay }: Props) {
   const { videoRef, ready, error, qualities, activeQuality, switchQuality, retry } = handle;
   const [showQuality, setShowQuality] = useState(false);
-  const wrapRef = useRef<HTMLDivElement>(null);
+  const [isFullscreen, setIsFullscreen] = useState(false);
+  const stageRef = useRef<HTMLDivElement>(null);
 
   // apply autoplay once ready
   useEffect(() => {
@@ -27,10 +30,44 @@ export default function VideoPlayer({ info, handle, title, poster, header, autoP
     }
   }, [ready, autoPlay, videoRef]);
 
+  // Fullscreen → force landscape. The native layer locks orientation when the
+  // WebView shows a fullscreen video surface; this covers the JS path too.
+  useEffect(() => {
+    const onFsChange = () => {
+      const active = !!document.fullscreenElement;
+      setIsFullscreen(active);
+      if (active) {
+        void lockLandscape();
+      } else {
+        void unlockOrientation();
+      }
+    };
+    document.addEventListener('fullscreenchange', onFsChange);
+    return () => document.removeEventListener('fullscreenchange', onFsChange);
+  }, []);
+
+  const toggleFullscreen = () => {
+    const stage = stageRef.current;
+    if (!stage) return;
+    if (document.fullscreenElement) {
+      void document.exitFullscreen().catch(() => undefined);
+      return;
+    }
+    if (typeof stage.requestFullscreen === 'function') {
+      void stage.requestFullscreen().catch(() => undefined);
+      return;
+    }
+    // very old WebView fallback: hand off to the native video fullscreen
+    const video = videoRef.current as
+      | (HTMLVideoElement & { webkitEnterFullscreen?: () => void })
+      | null;
+    video?.webkitEnterFullscreen?.();
+  };
+
   return (
     <div className="w-full">
       {header}
-      <div ref={wrapRef} className="relative w-full bg-black">
+      <div ref={stageRef} className="video-stage relative w-full bg-black">
         {/* 16:9 stage */}
         <div className="relative aspect-video w-full overflow-hidden bg-black">
           <video
@@ -76,6 +113,13 @@ export default function VideoPlayer({ info, handle, title, poster, header, autoP
               {activeQuality || 'Auto'}
             </button>
           )}
+          <button
+            onClick={toggleFullscreen}
+            aria-label={isFullscreen ? 'Keluar dari layar penuh' : 'Layar penuh'}
+            className="pressable grid h-8 w-8 shrink-0 place-items-center rounded-full bg-card text-fg-2 ring-1 ring-line-2"
+          >
+            {isFullscreen ? <Minimize2 size={14} /> : <Maximize2 size={14} />}
+          </button>
         </div>
 
         {showQuality && qualities.length > 1 && (

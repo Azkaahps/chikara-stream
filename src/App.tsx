@@ -20,12 +20,12 @@ export default function App() {
   useNativeShell();
   const [splashDone, setSplashDone] = useState(() => {
     // only show splash once per app session
-    return sessionStorage.getItem('azkahps:splash') !== '1';
+    return sessionStorage.getItem('chikara:splash') !== '1';
   });
 
   useEffect(() => {
     if (!splashDone) return;
-    sessionStorage.setItem('azkahps:splash', '1');
+    sessionStorage.setItem('chikara:splash', '1');
   }, [splashDone]);
 
   if (!splashDone) return <Splash onDone={() => setSplashDone(true)} />;
