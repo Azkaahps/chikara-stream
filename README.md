@@ -3,6 +3,16 @@
 Aplikasi mobile nonton **anime + film jadi satu** - dibangun dengan React 19 + Vite + Tailwind 4, dibungkus Capacitor 8 jadi APK Android.
 
 <p align="center">
+  <a href="https://github.com/Azkaahps/chikara-stream/releases/latest"><img src="https://img.shields.io/github/v/release/Azkaahps/chikara-stream?style=flat-square&label=rilis%20terbaru&color=FFC928" alt="Rilis terbaru" /></a>
+  <img src="https://img.shields.io/badge/Android-7.0%2B-3DDC84?style=flat-square&logo=android&logoColor=white" alt="Android 7.0+" />
+  <img src="https://img.shields.io/badge/ukuran-3.4%20MB-FFC928?style=flat-square" alt="3.4 MB" />
+</p>
+
+<p align="center">
+  <a href="https://github.com/Azkaahps/chikara-stream/releases/latest"><b>Download APK terbaru</b></a>
+</p>
+
+<p align="center">
   <img src="docs/screenshots/home.png" width="30%" alt="Beranda" />
   <img src="docs/screenshots/episode-list.png" width="30%" alt="Detail anime + daftar episode" />
   <img src="docs/screenshots/episode-search.png" width="30%" alt="Pencarian episode" />
