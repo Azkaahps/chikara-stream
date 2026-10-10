@@ -1,5 +1,12 @@
 apply plugin: 'com.android.application'
 
+def keystorePropsFile = rootProject.file("../keystore.properties")
+def keystoreProps = new Properties()
+def hasReleaseKeystore = keystorePropsFile.exists()
+if (hasReleaseKeystore) {
+    keystoreProps.load(new FileInputStream(keystorePropsFile))
+}
+
 android {
     namespace = "online.azkahps.play"
     compileSdk = rootProject.ext.compileSdkVersion
@@ -18,17 +25,21 @@ android {
     }
     signingConfigs {
         release {
-            storeFile file("../../azkahps-release.keystore")
-            storePassword "***REMOVED***"
-            keyAlias "azkahps"
-            keyPassword "***REMOVED***"
+            if (hasReleaseKeystore) {
+                storeFile file(keystoreProps['storeFile'])
+                storePassword keystoreProps['storePassword']
+                keyAlias keystoreProps['keyAlias']
+                keyPassword keystoreProps['keyPassword']
+            }
         }
     }
     buildTypes {
         release {
             minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
-            signingConfig signingConfigs.release
+            if (hasReleaseKeystore) {
+                signingConfig signingConfigs.release
+            }
         }
     }
 }
