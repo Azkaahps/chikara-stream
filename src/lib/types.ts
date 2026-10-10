@@ -1,5 +1,5 @@
 // ============================================================
-// Chikara Stream — Unified types for anime + movie API
+// Chikara Stream - Unified types for anime + movie API
 // API: https://api.azkahps.online/api/v1
 // Envelope: { ok, category, provider, cached, timestamp, data }
 // ============================================================

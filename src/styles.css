@@ -1,5 +1,5 @@
 /* ============================================================
-   Chikara Stream — Design tokens
+   Chikara Stream - Design tokens
    Adapted from AniBiPlay design study (design-lab/06-anibiplay-mobile)
    Dark-first, single warm accent, poster-forward, big radii.
 
@@ -77,7 +77,7 @@ body {
   color: var(--color-accent);
 }
 
-/* Shimmer placeholder — cheap opacity pulse (no background-position repaint) */
+/* Shimmer placeholder - cheap opacity pulse (no background-position repaint) */
 @keyframes shimmer {
   0%,
   100% {
@@ -92,7 +92,7 @@ body {
   animation: shimmer 1.2s ease-in-out infinite;
 }
 
-/* Splash pulse — transform/opacity only (GPU-cheap) */
+/* Splash pulse - transform/opacity only (GPU-cheap) */
 @keyframes glow-pulse {
   0%,
   100% {

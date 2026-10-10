@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Generate app icons for Chikara Stream — yellow letter 'C' on black."""
+"""Generate app icons for Chikara Stream - yellow letter 'C' on black."""
 import math
 import os
 
@@ -11,7 +11,7 @@ RES = os.path.join(ROOT, "android", "app", "src", "main", "res")
 
 ACCENT = (255, 201, 40, 255)
 BLACK = (0, 0, 0, 255)
-SS = 4  # supersampling factor — renders big, downscales with LANCZOS (anti-aliased)
+SS = 4  # supersampling factor - renders big, downscales with LANCZOS (anti-aliased)
 
 SIZES = {
     "mipmap-mdpi": 48,

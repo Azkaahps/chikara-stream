@@ -1,4 +1,4 @@
-// Skeleton loaders — shimmer placeholders matching layout shapes.
+// Skeleton loaders - shimmer placeholders matching layout shapes.
 
 export function SkeletonCard({ variant = 'grid' }: { variant?: 'rail' | 'grid' }) {
   return (

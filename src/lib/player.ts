@@ -1,5 +1,5 @@
 // ============================================================
-// Player bridge — HLS + MP4 playback, resume, progress saving
+// Player bridge - HLS + MP4 playback, resume, progress saving
 // Strategy (verified against live API 2026-10):
 //  - Anime: kuramadrive MP4 -> play via /proxy/stream (CORS safe)
 //  - Movie: cast -> HLS (proxy/hls), hydrax -> MP4 (proxy/hydrax/stream),
@@ -14,7 +14,7 @@ import type { AnimeStreamData } from '../lib/types';
 
 // hls.js is heavy (~500 KB) and only needed for movie HLS servers, so it is
 // lazy-loaded on demand. `hls.js/light` drops the subtitle/alt-audio parsers
-// we do not use — cheaper to download, parse and keep in memory on slow phones.
+// we do not use - cheaper to download, parse and keep in memory on slow phones.
 type HlsCtor = typeof import('hls.js').default;
 let hlsCtorPromise: Promise<HlsCtor> | null = null;
 
@@ -110,7 +110,7 @@ export async function resolvePlayback(args: PlayArgs): Promise<PlaybackInfo> {
       errors.push(`${p.server}: ${(err as Error).message.slice(0, 60)}`);
     }
   }
-  throw new Error(`Semua server gagal — ${errors.join(' | ')}`);
+  throw new Error(`Semua server gagal - ${errors.join(' | ')}`);
 }
 
 function absolutize(url: string): string {
@@ -124,7 +124,7 @@ function qualityRank(q?: string): number {
 }
 
 // ============================================================
-// useVideoPlayback — wires <video> element to sources + HLS
+// useVideoPlayback - wires <video> element to sources + HLS
 // ============================================================
 
 export interface PlaybackHandle {
@@ -203,7 +203,7 @@ export function useVideoPlayback(
     };
 
     const onErr = () => {
-      if (!destroyed) setError('Stream gagal dimuat — coba server/kualitas lain');
+      if (!destroyed) setError('Stream gagal dimuat - coba server/kualitas lain');
     };
 
     video.addEventListener('loadedmetadata', onLoaded);
@@ -219,7 +219,7 @@ export function useVideoPlayback(
               enableWorker: true,
               abrEwmaDefaultEstimate: 2_500_000,
               capLevelToPlayerSize: false,
-              // bounded buffers — keep memory low on potato phones
+              // bounded buffers - keep memory low on potato phones
               backBufferLength: 30,
               maxBufferLength: 20,
               maxMaxBufferLength: 40,
@@ -237,7 +237,7 @@ export function useVideoPlayback(
                     hls.recoverMediaError();
                     break;
                   default:
-                    setError('Stream bermasalah — coba server lain');
+                    setError('Stream bermasalah - coba server lain');
                     break;
                 }
               }
@@ -249,7 +249,7 @@ export function useVideoPlayback(
           }
         })
         .catch(() => {
-          if (!destroyed) setError('Gagal memuat pemutar — coba lagi');
+          if (!destroyed) setError('Gagal memuat pemutar - coba lagi');
         });
     } else {
       video.src = active.url;

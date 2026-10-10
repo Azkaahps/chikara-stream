@@ -1,4 +1,4 @@
-// TopBar — screen header. Optional back button; large title + eyebrow.
+// TopBar - screen header. Optional back button; large title + eyebrow.
 
 import { useNavigate } from 'react-router-dom';
 import { ArrowLeft } from 'lucide-react';

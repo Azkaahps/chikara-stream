@@ -1,4 +1,4 @@
-// MovieWatch — movie player.
+// MovieWatch - movie player.
 // Loads the movie detail (server list), resolves a playable source with
 // failover, resumes and persists progress, and allows switching servers.
 
@@ -57,7 +57,7 @@ export default function MovieWatch() {
   const stream = useAsync(
     async () => {
       const players = detail.data?.players ?? [];
-      if (!players.length) return null; // detail still loading (or no servers) — UI handles it
+      if (!players.length) return null; // detail still loading (or no servers) - UI handles it
       try {
         const info = await resolvePlayback({
           kind: 'movie',
@@ -95,7 +95,7 @@ export default function MovieWatch() {
   const posRef = useRef({ pos: 0, dur: 0 });
   const lastSavedRef = useRef(0);
 
-  // Route params change without remount — re-read resume + drop stale buffers.
+  // Route params change without remount - re-read resume + drop stale buffers.
   useEffect(() => {
     posRef.current = { pos: 0, dur: 0 };
     lastSavedRef.current = 0;
@@ -107,7 +107,7 @@ export default function MovieWatch() {
   const persist = (pos: number, dur: number) => {
     if (!dur || dur < 30 || pos < 5) return;
     if (pos >= dur - 10) {
-      removeProgress(progressKey); // finished — drop from "Lanjutkan"
+      removeProgress(progressKey); // finished - drop from "Lanjutkan"
       return;
     }
     saveProgress({
@@ -224,7 +224,7 @@ export default function MovieWatch() {
           <History size={13} className="text-accent" />
           Lanjut dari {formatTime(startAt)}
           <button onClick={restart} className="pressable font-semibold text-accent">
-            · Mulai dari awal
+            - Mulai dari awal
           </button>
         </p>
       )}
@@ -261,7 +261,7 @@ export default function MovieWatch() {
             ))}
           </div>
           <p className="mt-2 text-[11.5px] text-fg-3">
-            Video tersendat? Coba server lain — posisi tontonan tetap tersimpan.
+            Video tersendat? Coba server lain - posisi tontonan tetap tersimpan.
           </p>
         </section>
       )}

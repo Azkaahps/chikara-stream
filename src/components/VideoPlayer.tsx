@@ -1,4 +1,4 @@
-// VideoPlayer — core playback surface.
+// VideoPlayer - core playback surface.
 // Native <video> controls (reliable on Android WebView) + quality chips +
 // fullscreen toggle that forces landscape on phones.
 
@@ -30,7 +30,7 @@ export default function VideoPlayer({ info, handle, title, poster, header, autoP
     }
   }, [ready, autoPlay, videoRef]);
 
-  // Fullscreen → force landscape. The native layer locks orientation when the
+  // Fullscreen -> force landscape. The native layer locks orientation when the
   // WebView shows a fullscreen video surface; this covers the JS path too.
   useEffect(() => {
     const onFsChange = () => {
@@ -83,7 +83,7 @@ export default function VideoPlayer({ info, handle, title, poster, header, autoP
             <div className="pointer-events-none absolute inset-0 grid place-items-center bg-black/60">
               <div className="flex flex-col items-center gap-3">
                 <Loader2 size={30} className="animate-spin text-accent" />
-                <p className="text-[12.5px] font-medium text-fg-2">Memuat stream…</p>
+                <p className="text-[12.5px] font-medium text-fg-2">Memuat stream...</p>
               </div>
             </div>
           )}

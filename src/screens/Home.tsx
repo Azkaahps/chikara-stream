@@ -1,4 +1,4 @@
-// Home — "Untuk Kamu": featured hero carousel + rails (anime + film united).
+// Home - "Untuk Kamu": featured hero carousel + rails (anime + film united).
 
 import { useMemo, useRef, useState } from 'react';
 import { Link } from 'react-router-dom';
@@ -11,6 +11,7 @@ import TitleCard from '../components/TitleCard';
 import { SkeletonHero, SkeletonRail } from '../components/Skeleton';
 import { getAllProgress } from '../lib/store';
 import { LogoBox } from '../components/Logo';
+import UpdateBanner from '../components/UpdateBanner';
 
 export default function Home() {
   const animeHome = useAsync(() => animeApi.home(), []);
@@ -45,11 +46,14 @@ export default function Home() {
             Chikara Stream
           </h1>
           <p className="mt-0.5 text-[12.5px] text-fg-3">
-            Anime & film streaming — satu tempat.
+            Anime & film streaming - satu tempat.
           </p>
         </div>
         <LogoBox size={44} />
       </header>
+
+      {/* OTA update prompt (only shows when a newer build is published) */}
+      <UpdateBanner />
 
       {/* Continue watching */}
       {continueWatching.length > 0 && (
@@ -224,7 +228,7 @@ export default function Home() {
       )}
 
       <footer className="mt-10 px-4 pb-6 text-center text-[11px] text-fg-3">
-        Chikara Stream · data dari api.azkahps.online
+        Chikara Stream - data dari api.azkahps.online
       </footer>
     </div>
   );

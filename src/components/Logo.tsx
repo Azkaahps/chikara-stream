@@ -1,4 +1,4 @@
-// Chikara Stream — brand mark.
+// Chikara Stream - brand mark.
 // Letter "C" drawn as a single SVG stroke arc (gap on the right).
 // - LogoMark: bare C, inherits currentColor.
 // - LogoBox:  C inside the yellow rounded tile used across the app.

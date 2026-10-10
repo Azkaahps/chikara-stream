@@ -1,5 +1,5 @@
-// AnimeDetail — hero poster, meta chips, sinopsis, daftar episode.
-// Route: /anime/:id/:slug — tapping an episode opens /watch/anime/:id/:slug/:ep
+// AnimeDetail - hero poster, meta chips, sinopsis, daftar episode.
+// Route: /anime/:id/:slug - tapping an episode opens /watch/anime/:id/:slug/:ep
 
 import { useEffect, useMemo, useState } from 'react';
 import { Link, useParams } from 'react-router-dom';

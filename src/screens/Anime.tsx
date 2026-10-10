@@ -1,4 +1,4 @@
-// Anime — tab Anime: update, ongoing, movie, dan jadwal rilis + shortcut genre.
+// Anime - tab Anime: update, ongoing, movie, dan jadwal rilis + shortcut genre.
 
 import { useMemo, useState } from 'react';
 import { Link } from 'react-router-dom';
@@ -40,8 +40,8 @@ function dayLabel(day: string): string {
   const idx = DAY_ORDER.indexOf(day);
   if (idx < 0) return day;
   const today = todayIndex();
-  if (idx === today) return `${day} · Hari ini`;
-  if (idx === (today + 1) % 7) return `${day} · Besok`;
+  if (idx === today) return `${day} - Hari ini`;
+  if (idx === (today + 1) % 7) return `${day} - Besok`;
   return day;
 }
 

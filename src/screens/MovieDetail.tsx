@@ -1,7 +1,7 @@
 // ============================================================
-// MovieDetail — film detail page (LK21 provider)
+// MovieDetail - film detail page (LK21 provider)
 // Hero poster + title/rating meta, synopsis, cast, and the
-// primary "Tonton" action → /watch/movie/:slug.
+// primary "Tonton" action -> /watch/movie/:slug.
 // ============================================================
 
 import { useState } from 'react';

@@ -1,4 +1,4 @@
-// Library — tab Simpan: lanjutkan menonton + daftar simpan (localStorage).
+// Library - tab Simpan: lanjutkan menonton + daftar simpan (localStorage).
 
 import { useState } from 'react';
 import { Link } from 'react-router-dom';
@@ -23,7 +23,7 @@ export default function Library() {
   };
 
   const removeFromWatchlist = (entry: WatchlistEntry) => {
-    toggleWatchlist(entry); // entry exists → dihapus dari daftar
+    toggleWatchlist(entry); // entry exists -> dihapus dari daftar
     setWatchlist((prev) => prev.filter((e) => e.key !== entry.key));
   };
 
@@ -120,7 +120,7 @@ export default function Library() {
                       {p.title}
                     </p>
                     <p className="text-[11px] text-fg-3">
-                      {p.episodeLabel ? `${p.episodeLabel} · ` : ''}
+                      {p.episodeLabel ? `${p.episodeLabel} - ` : ''}
                       {pct}% ditonton
                     </p>
                   </Link>

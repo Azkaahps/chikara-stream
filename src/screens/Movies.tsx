@@ -1,4 +1,4 @@
-// Movies — tab Film: katalog film & series (LK21) + shortcut genre + pagination.
+// Movies - tab Film: katalog film & series (LK21) + shortcut genre + pagination.
 
 import { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
@@ -17,7 +17,7 @@ const TABS: { key: Tab; label: string }[] = [
   { key: 'series', label: 'Series' },
 ];
 
-/** Genre populer — slug mengikuti pola URL /genre/{slug} di API movie. */
+/** Genre populer - slug mengikuti pola URL /genre/{slug} di API movie. */
 const MOVIE_GENRES: { slug: string; label: string }[] = [
   { slug: 'action', label: 'Action' },
   { slug: 'adventure', label: 'Adventure' },
@@ -143,7 +143,7 @@ export default function Movies() {
                   className="pressable flex items-center gap-2 rounded-full bg-card px-6 py-2.5 text-[13px] font-bold text-accent ring-1 ring-line-2 disabled:opacity-60"
                 >
                   {loadingMore && <Loader2 size={15} className="animate-spin" />}
-                  {loadingMore ? 'Memuat…' : 'Muat lebih banyak'}
+                  {loadingMore ? 'Memuat...' : 'Muat lebih banyak'}
                 </button>
               ) : (
                 <p className="text-[12px] text-fg-3">Semua sudah dimuat</p>

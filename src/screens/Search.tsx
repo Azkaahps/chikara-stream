@@ -1,4 +1,4 @@
-// Search — pencarian gabungan anime + film, dengan riwayat pencarian lokal.
+// Search - pencarian gabungan anime + film, dengan riwayat pencarian lokal.
 
 import { useMemo, useState } from 'react';
 import { AlertTriangle, History, RotateCcw, Search as SearchIcon, SearchX, X } from 'lucide-react';
@@ -47,7 +47,7 @@ export default function Search() {
 
   const q = debounced.trim();
   const rawQ = query.trim();
-  /** true saat debounce belum selesai — tahan tampilan hasil lama */
+  /** true saat debounce belum selesai - tahan tampilan hasil lama */
   const pending = rawQ !== q;
 
   const res = useAsync(async () => {
@@ -111,7 +111,7 @@ export default function Search() {
           <input
             value={query}
             onChange={(e) => setQuery(e.target.value)}
-            placeholder="Cari anime atau film…"
+            placeholder="Cari anime atau film..."
             type="search"
             enterKeyHint="search"
             autoFocus
@@ -152,7 +152,7 @@ export default function Search() {
 
           {recent.length === 0 ? (
             <p className="mt-4 rounded-[20px] bg-card px-4 py-8 text-center text-[12.5px] leading-relaxed text-fg-3 ring-1 ring-line">
-              Cari judul anime atau film — hasil muncul otomatis saat kamu mengetik.
+              Cari judul anime atau film - hasil muncul otomatis saat kamu mengetik.
             </p>
           ) : (
             <div className="mt-3 space-y-2">
@@ -222,7 +222,7 @@ export default function Search() {
                 <SearchX size={26} className="text-accent" />
                 <p className="text-[14px] font-semibold text-fg">Tidak ditemukan</p>
                 <p className="text-[12.5px] leading-relaxed text-fg-3">
-                  Tidak ada hasil untuk “{q}”. Coba kata kunci lain.
+                  Tidak ada hasil untuk "{q}". Coba kata kunci lain.
                 </p>
               </div>
             ) : (

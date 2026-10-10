@@ -1,5 +1,5 @@
-// GenreResults — daftar judul per genre.
-// Route: /genre/movie/:genre (kind="movie") · /genre/anime/:slug (kind="anime")
+// GenreResults - daftar judul per genre.
+// Route: /genre/movie/:genre (kind="movie") - /genre/anime/:slug (kind="anime")
 
 import { useEffect, useState } from 'react';
 import { useParams } from 'react-router-dom';
@@ -14,7 +14,7 @@ import { SkeletonGrid } from '../components/Skeleton';
 /** Anggap masih ada halaman berikutnya selama halaman terakhir mengembalikan minimal N item. */
 const PAGE_MIN = 10;
 
-/** slug → nama tampilan; API tidak menyediakan nama genre untuk endpoint ini. */
+/** slug -> nama tampilan; API tidak menyediakan nama genre untuk endpoint ini. */
 function prettyGenre(slug: string): string {
   let s = slug;
   try {
@@ -132,7 +132,7 @@ export default function GenreResults({ kind }: { kind: 'movie' | 'anime' }) {
                   className="pressable flex items-center gap-2 rounded-full bg-card px-6 py-2.5 text-[13px] font-bold text-accent ring-1 ring-line-2 disabled:opacity-60"
                 >
                   {loadingMore && <Loader2 size={15} className="animate-spin" />}
-                  {loadingMore ? 'Memuat…' : 'Muat lebih banyak'}
+                  {loadingMore ? 'Memuat...' : 'Muat lebih banyak'}
                 </button>
               ) : (
                 <p className="text-[12px] text-fg-3">Semua sudah dimuat</p>

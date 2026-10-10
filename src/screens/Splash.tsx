@@ -1,4 +1,4 @@
-// Splash — brand loading gate for Chikara Stream.
+// Splash - brand loading gate for Chikara Stream.
 // Prefetches the home feeds while showing real progress, then hands off
 // to the app shell (feeds are cached, so Home paints instantly).
 
@@ -71,7 +71,7 @@ export default function Splash({ onDone }: { onDone: () => void }) {
         />
       </div>
       <p className="mt-3 text-[11px] tracking-wide text-fg-3">
-        {progress < 100 ? 'Menyiapkan tontonan…' : 'Siap!'}
+        {progress < 100 ? 'Menyiapkan tontonan...' : 'Siap!'}
       </p>
     </div>
   );

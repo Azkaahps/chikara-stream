@@ -1,5 +1,5 @@
 // ============================================================
-// Chikara Stream — API client
+// Chikara Stream - API client
 // Wraps https://api.azkahps.online/api/v1
 // Small cache layer (memory + persisted home feeds) so the app
 // opens instantly and survives flaky networks on slow devices.
@@ -93,14 +93,14 @@ async function request<T>(path: string, init?: RequestInit, opts?: { net?: boole
     }
     return json.data;
   } catch (err) {
-    // Network/upstream failure on a persisted feed → serve the last good copy.
+    // Network/upstream failure on a persisted feed -> serve the last good copy.
     if (cacheable && persistable) {
       const fallback = readPersist<T>(path);
       if (fallback && Date.now() - fallback.t < PERSIST_TTL_MS) return fallback.data;
     }
     if (err instanceof ApiError) throw err;
     if ((err as Error).name === 'AbortError') {
-      throw new ApiError('Koneksi timeout — cek internet kamu', undefined, path);
+      throw new ApiError('Koneksi timeout - cek internet kamu', undefined, path);
     }
     throw new ApiError((err as Error).message || 'Network error', undefined, path);
   } finally {

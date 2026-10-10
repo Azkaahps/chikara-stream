@@ -1,4 +1,4 @@
-// TitleCard — poster-first card used in grids and rails (AniBiPlay style)
+// TitleCard - poster-first card used in grids and rails (AniBiPlay style)
 
 import { Link } from 'react-router-dom';
 import { Star } from 'lucide-react';

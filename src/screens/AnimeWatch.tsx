@@ -1,4 +1,4 @@
-// AnimeWatch — anime episode player.
+// AnimeWatch - anime episode player.
 // Resolves kuramadrive MP4 sources through the shared player lib, resumes from
 // saved progress, persists progress while playing, and advances to the next episode.
 
@@ -86,7 +86,7 @@ export default function AnimeWatch() {
   const posRef = useRef({ pos: 0, dur: 0 });
   const lastSavedRef = useRef(0);
 
-  // Route params change without remount — drop the previous episode's buffer.
+  // Route params change without remount - drop the previous episode's buffer.
   useEffect(() => {
     posRef.current = { pos: 0, dur: 0 };
     lastSavedRef.current = 0;
@@ -95,7 +95,7 @@ export default function AnimeWatch() {
   const persist = (pos: number, dur: number) => {
     if (!dur || dur < 30 || pos < 5) return;
     if (pos >= dur - 10) {
-      removeProgress(progressKey); // finished — drop from "Lanjutkan"
+      removeProgress(progressKey); // finished - drop from "Lanjutkan"
       return;
     }
     saveProgress({
@@ -217,7 +217,7 @@ export default function AnimeWatch() {
         <VideoPlayer
           info={fresh}
           handle={playback}
-          title={`Episode ${episode} — ${title}`}
+          title={`Episode ${episode} - ${title}`}
           poster={poster}
           autoPlay
         />
@@ -253,7 +253,7 @@ export default function AnimeWatch() {
               <History size={13} className="text-accent" />
               Lanjut dari {formatTime(resumeAt)}
               <button onClick={restart} className="pressable font-semibold text-accent">
-                · Mulai dari awal
+                - Mulai dari awal
               </button>
             </p>
           )}
@@ -292,7 +292,7 @@ export default function AnimeWatch() {
         )}
         {epTitle && (
           <p className="mt-0.5 text-[12.5px] text-fg-3">
-            Ep {episode} — {epTitle}
+            Ep {episode} - {epTitle}
           </p>
         )}
         <div className="mt-2 flex flex-wrap items-center gap-x-3 gap-y-1 text-[12px] text-fg-3">
@@ -331,7 +331,7 @@ export default function AnimeWatch() {
         )}
         {detail.error && !detail.data && (
           <p className="mt-3 text-[12px] text-fg-3">
-            Info anime tidak bisa dimuat — pemutaran tetap berjalan.
+            Info anime tidak bisa dimuat - pemutaran tetap berjalan.
           </p>
         )}
       </section>

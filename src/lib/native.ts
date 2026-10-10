@@ -1,6 +1,6 @@
 // Native shell integration: dark status bar, Android back button,
 // and screen-orientation helpers for fullscreen video (landscape).
-// Safe to import in web preview — all calls are guarded.
+// Safe to import in web preview - all calls are guarded.
 
 import { useEffect } from 'react';
 import { Capacitor } from '@capacitor/core';
