@@ -154,8 +154,9 @@ export default function AnimeWatch() {
   const idx = episodes.indexOf(episode);
   const prevEp = idx > 0 ? episodes[idx - 1] : null;
   const nextEp = idx >= 0 && idx < episodes.length - 1 ? episodes[idx + 1] : null;
-  const totalEps =
-    episodes.length > 1 ? episodes.length : Number.parseInt(detail.data?.episodesTotal || '', 10) || 0;
+  // Episode numbers are not always 1-based (One Piece starts at 989), so the
+  // "current / total" label uses the highest episode number, not the count.
+  const maxEp = episodes.length ? Math.max(...episodes) : 0;
 
   const goToEpisode = (n: number) => {
     if (n === episode) return;
@@ -304,9 +305,9 @@ export default function AnimeWatch() {
               {detail.data.type}
             </span>
           )}
-          {totalEps > 1 && (
+          {maxEp > 1 && (
             <span>
-              {episode} / {totalEps}
+              {episode} / {maxEp}
             </span>
           )}
           {detail.data?.status && <span>{detail.data.status}</span>}
